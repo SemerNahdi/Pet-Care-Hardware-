@@ -1,0 +1,9 @@
+# Wokwi Library List
+# See https://docs.wokwi.com/guides/libraries
+
+ESP32Servo
+WiFi
+PubSubClient
+Firebase ESP32 Client
+Firebase Arduino Client Library for ESP8266 and ESP32
+Servo

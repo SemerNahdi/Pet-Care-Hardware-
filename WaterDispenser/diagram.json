@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "author": "Semer Nahdi",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": -62.36, "attrs": {} },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": 54,
+      "left": -130.6,
+      "attrs": { "color": "red", "flip": "" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 90.35,
+      "left": -201.6,
+      "attrs": { "value": "1000" }
+    },
+    {
+      "type": "wokwi-hc-sr04",
+      "id": "ultrasonic1",
+      "top": -94.5,
+      "left": 15.1,
+      "attrs": { "distance": "360" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "ultrasonic1:GND", "esp:GND.2", "black", [ "v48", "h-78" ] ],
+    [ "ultrasonic1:VCC", "esp:5V", "red", [ "v220.8", "h-144" ] ],
+    [ "r1:1", "esp:GND.1", "green", [ "v57.6", "h134.4" ] ],
+    [ "esp:18", "ultrasonic1:ECHO", "green", [ "h67.2", "v-124.8" ] ],
+    [ "ultrasonic1:TRIG", "esp:5", "green", [ "v134.4", "h-58" ] ],
+    [ "led1:C", "r1:2", "green", [ "v0", "h-28.4" ] ],
+    [ "led1:A", "esp:33", "green", [ "h19.2", "v9.6" ] ]
+  ],
+  "dependencies": {}
+}

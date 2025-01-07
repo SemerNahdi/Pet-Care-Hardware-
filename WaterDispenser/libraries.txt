@@ -1,0 +1,8 @@
+# Wokwi Library List
+# See https://docs.wokwi.com/guides/libraries
+
+PubSubClient
+WiFi
+Firebase
+Firebase ESP32 Client
+Firebase Arduino Client Library for ESP8266 and ESP32
