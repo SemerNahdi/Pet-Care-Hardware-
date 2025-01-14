@@ -1,17 +1,13 @@
 #include <WiFi.h>
-#include <Firebase_ESP_Client.h>   // Include Firebase ESP32 library
+#include <Firebase_ESP_Client.h> // Include Firebase ESP32 library
 
 // Include the Token and RTDB helpers
 #include "addons/TokenHelper.h"
 #include "addons/RTDBHelper.h"
-
+#include "firebase_credentials.h"
 // Define your Wi-Fi credentials
-#define WIFI_SSID "Wokwi-GUEST"  // Replace with your SSID
-#define WIFI_PASSWORD ""         // Replace with your Wi-Fi password
-
-// Firebase project credentials
-#define API_KEY "AIzaSyBFDl3OfOqj8lU9vN4ygmDYBD7XJG_xO1I"  // Replace with your Firebase API Key
-#define DATABASE_URL "https://pettify-af8a3-default-rtdb.firebaseio.com/"  // Replace with your Firebase RTDB URL
+#define WIFI_SSID "Wokwi-GUEST" // Replace with your SSID
+#define WIFI_PASSWORD ""        // Replace with your Wi-Fi password
 
 // Define your Firebase data object
 FirebaseData fbdo;
@@ -21,9 +17,9 @@ FirebaseAuth auth;
 FirebaseConfig config;
 
 // Sensor pins
-#define TRIG_PIN 5     // HC-SR04 TRIG pin
-#define ECHO_PIN 18    // HC-SR04 ECHO pin
-#define LED_PIN 33     // LED pin to indicate low water level
+#define TRIG_PIN 5  // HC-SR04 TRIG pin
+#define ECHO_PIN 18 // HC-SR04 ECHO pin
+#define LED_PIN 33  // LED pin to indicate low water level
 
 // Variables for water level detection
 long duration;
@@ -35,7 +31,8 @@ unsigned long sendDataPrevMillis = 0;
 int count = 0;
 bool signupOK = false;
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
@@ -44,7 +41,8 @@ void setup() {
   // Connect to Wi-Fi
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Connecting to Wi-Fi...");
-  while (WiFi.status() != WL_CONNECTED) {
+  while (WiFi.status() != WL_CONNECTED)
+  {
     delay(300);
     Serial.print(".");
   }
@@ -55,25 +53,30 @@ void setup() {
   // Firebase configuration setup
   config.api_key = API_KEY;
   config.database_url = DATABASE_URL;
-  
+
   // Sign up the Firebase user
-  if (Firebase.signUp(&config, &auth, "", "")) {
+  if (Firebase.signUp(&config, &auth, "", ""))
+  {
     Serial.println("Firebase sign-up successful!");
     signupOK = true;
-  } else {
+  }
+  else
+  {
     Serial.printf("Firebase sign-up failed: %s\n", config.signer.signupError.message.c_str());
   }
 
   // Set callback for token generation
   config.token_status_callback = tokenStatusCallback;
-  
+
   // Initialize Firebase
   Firebase.begin(&config, &auth);
   Firebase.reconnectWiFi(true);
 }
 
-void loop() {
-  if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0)) {
+void loop()
+{
+  if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0))
+  {
     sendDataPrevMillis = millis();
 
     // Measure water level using HC-SR04
@@ -91,38 +94,53 @@ void loop() {
     Serial.println(" cm");
 
     // Check water level and update Firebase
-    if (distance > waterLevelThreshold) {
+    if (distance > waterLevelThreshold)
+    {
       digitalWrite(LED_PIN, HIGH); // Turn on LED for low water level
       Serial.println("Low water level! LED ON.");
-      if (Firebase.RTDB.setString(&fbdo, "/waterLevel", "low")) {
+      if (Firebase.RTDB.setString(&fbdo, "/waterLevel", "low"))
+      {
         Serial.println("Firebase updated: Low water level.");
-      } else {
+      }
+      else
+      {
         Serial.println("Failed to update Firebase.");
         Serial.println(fbdo.errorReason());
       }
-    } else {
+    }
+    else
+    {
       digitalWrite(LED_PIN, LOW); // Turn off LED for normal water level
       Serial.println("Water level OK. LED OFF.");
-      if (Firebase.RTDB.setString(&fbdo, "/waterLevel", "ok")) {
+      if (Firebase.RTDB.setString(&fbdo, "/waterLevel", "ok"))
+      {
         Serial.println("Firebase updated: Water level OK.");
-      } else {
+      }
+      else
+      {
         Serial.println("Failed to update Firebase.");
         Serial.println(fbdo.errorReason());
       }
     }
 
     // Update the distance value to Firebase
-    if (Firebase.RTDB.setFloat(&fbdo, "/distance", distance)) {
+    if (Firebase.RTDB.setFloat(&fbdo, "/distance", distance))
+    {
       Serial.println("Firebase updated: Distance recorded.");
-    } else {
+    }
+    else
+    {
       Serial.println("Failed to update Firebase.");
       Serial.println(fbdo.errorReason());
     }
 
     // Optionally, send additional test data every 15 seconds
-    if (Firebase.RTDB.setInt(&fbdo, "test/int", count)) {
+    if (Firebase.RTDB.setInt(&fbdo, "test/int", count))
+    {
       Serial.println("PASSED: Sent integer to Firebase.");
-    } else {
+    }
+    else
+    {
       Serial.println("FAILED to send integer.");
       Serial.println(fbdo.errorReason());
     }
